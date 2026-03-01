@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APMLAB · Membrane Biophysics · UAB</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg:     #07090d;
+      --bg2:    #0c1017;
+      --border: #17263a;
+      --accent: #5bc8f5;
+      --green:  #74c99a;
+      --muted:  #3d5568;
+      --text:   #9ab8cc;
+      --white:  #ddeef8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1.05rem;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 3rem; height: 54px;
+      background: rgba(7,9,13,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-brand {
+      font-family: 'DM Mono', monospace; font-size: 0.82rem;
+      letter-spacing: 0.14em; color: var(--white); text-decoration: none;
+    }
+    .nav-brand span { color: var(--accent); }
+
+    nav ul { display: flex; gap: 2.4rem; list-style: none; }
+
+    nav a {
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    nav a:hover { color: var(--accent); }
+
+    .page {
+      position: relative; z-index: 1;
+      max-width: 860px; margin: 0 auto; padding: 0 2.5rem;
+    }
+
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; padding-top: 54px;
+    }
+
+    .hero-mono {
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      color: var(--accent); letter-spacing: 0.22em; text-transform: uppercase;
+      margin-bottom: 1.6rem; opacity: 0; animation: up 0.6s 0.1s forwards;
+    }
+
+    h1 {
+      font-family: 'EB Garamond', serif; font-weight: 600;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      color: var(--white); line-height: 1.1;
+      opacity: 0; animation: up 0.7s 0.25s forwards;
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+
+    .hero-desc {
+      margin-top: 1.8rem; max-width: 560px;
+      font-size: 1.1rem; color: var(--text); line-height: 1.8;
+      opacity: 0; animation: up 0.7s 0.4s forwards;
+    }
+
+    .hero-nav {
+      display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 3rem;
+      opacity: 0; animation: up 0.6s 0.55s forwards;
+    }
+
+    .card-link {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.7rem 1.3rem;
+      border: 1px solid var(--border); border-radius: 3px;
+      background: var(--bg2);
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.06em; color: var(--text); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .card-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .card-link .num { color: var(--muted); font-size: 0.6rem; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    section { padding: 6rem 0; }
+
+    .sec-label {
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      color: var(--accent); letter-spacing: 0.25em; text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+
+    h2 {
+      font-family: 'EB Garamond', serif; font-weight: 600;
+      font-size: 2rem; color: var(--white); margin-bottom: 1.6rem; line-height: 1.15;
+    }
+
+    p { line-height: 1.85; color: var(--text); max-width: 640px; }
+    p + p { margin-top: 1rem; }
+
+    .about-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.8rem; }
+    .pill {
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      padding: 0.25rem 0.7rem; border: 1px solid var(--border);
+      border-radius: 2px; color: var(--muted); letter-spacing: 0.04em;
+    }
+
+    .research-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 0.5rem; }
+
+    .res-card {
+      padding: 1.8rem 1.6rem; border: 1px solid var(--border);
+      border-radius: 3px; background: var(--bg2);
+      transition: border-color 0.2s; position: relative; overflow: hidden;
+    }
+    .res-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--c, var(--accent)); opacity: 0; transition: opacity 0.2s;
+    }
+    .res-card:hover { border-color: var(--c, var(--accent)); }
+    .res-card:hover::before { opacity: 1; }
+
+    .res-num {
+      font-family: 'DM Mono', monospace; font-size: 0.58rem;
+      color: var(--muted); letter-spacing: 0.1em; margin-bottom: 0.8rem;
+    }
+
+    .res-card h3 {
+      font-family: 'EB Garamond', serif; font-size: 1.25rem;
+      color: var(--white); font-weight: 600; margin-bottom: 0.8rem; line-height: 1.2;
+    }
+
+    .res-card p { font-size: 0.9rem; line-height: 1.7; color: var(--text); max-width: none; }
+
+    .outlink {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      margin-top: 2rem; padding: 0.75rem 1.6rem;
+      border: 1px solid var(--border); border-radius: 3px;
+      background: var(--bg2);
+      font-family: 'DM Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.06em; color: var(--text); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .outlink:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    .tools-block {
+      margin-top: 0.5rem; padding: 2rem;
+      border: 1px solid var(--border); border-radius: 3px; background: var(--bg2);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem; flex-wrap: wrap; transition: border-color 0.2s;
+    }
+    .tools-block:hover { border-color: var(--green); }
+
+    .tools-text h3 {
+      font-family: 'EB Garamond', serif; font-size: 1.2rem;
+      color: var(--white); font-weight: 600; margin-bottom: 0.5rem;
+    }
+    .tools-text p { font-size: 0.88rem; line-height: 1.65; max-width: 480px; }
+
+    .tools-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem; border: 1px solid var(--green); border-radius: 3px;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em;
+      color: var(--green); text-decoration: none; white-space: nowrap;
+      flex-shrink: 0; transition: background 0.2s, color 0.2s;
+    }
+    .tools-btn:hover { background: var(--green); color: #000; }
+
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      max-width: 860px; margin: 0 auto;
+    }
+
+    .footer-name {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      color: var(--white); letter-spacing: 0.1em;
+    }
+    .footer-name span { color: var(--accent); }
+
+    .footer-inst {
+      font-family: 'DM Mono', monospace; font-size: 0.6rem;
+      color: var(--muted); letter-spacing: 0.06em; margin-top: 0.2rem;
+    }
+
+    .footer-links { display: flex; gap: 1.4rem; }
+    .footer-links a {
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    @media (max-width: 640px) {
+      nav ul { display: none; }
+      .research-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 2.2rem; }
+      .page { padding: 0 1.4rem; }
+      nav { padding: 0 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#hero"><span>APM</span>LAB</a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#tools">Tools</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+  <section id="hero">
+    <div class="hero-mono">Universitat Autònoma de Barcelona</div>
+    <h1>Structural &amp; Computational<br/><em>Biophysics</em> of<br/>Membrane Proteins<br/>&amp; Active Peptides</h1>
+    <p class="hero-desc">
+      APMLAB investigates how membrane proteins fold, function, and respond to membrane-active peptides — combining computational and experimental biophysics from the molecular to the physiopathological level.
+    </p>
+    <div class="hero-nav">
+      <a class="card-link" href="#about"><span class="num">01 ·</span> About us</a>
+      <a class="card-link" href="#research"><span class="num">02 ·</span> Research</a>
+      <a class="card-link" href="#publications"><span class="num">03 ·</span> Publications</a>
+      <a class="card-link" href="#tools"><span class="num">04 ·</span> Tools &amp; Scripts</a>
+    </div>
+  </section>
+</div>
+
+<hr />
+
+<div class="page">
+  <section id="about">
+    <div class="sec-label reveal">// 01 · About us</div>
+    <h2 class="reveal">APMLAB</h2>
+    <p class="reveal">
+      <strong style="color:var(--white)">APMLAB</strong> — the Structural and Computational Biophysics of Membrane Proteins and Membrane Active Peptides Lab — is a research group at the <strong style="color:var(--white)">Universitat Autònoma de Barcelona (UAB)</strong>, Department of Biochemistry and Molecular Biology.
+    </p>
+    <p class="reveal">
+      We combine coarse-grained and atomistic molecular dynamics simulations, in silico drug discovery, and experimental biophysics to decode the molecular determinants of membrane protein function and peptide–membrane interactions, with applications ranging from ion channel pharmacology to neurodegenerative disease.
+    </p>
+    <p class="reveal">
+      All our code, datasets, and simulation protocols are openly available — we are committed to reproducible, FAIR science.
+    </p>
+    <div class="about-pills reveal">
+      <span class="pill">MD Simulations</span>
+      <span class="pill">MARTINI / GROMACS</span>
+      <span class="pill">In silico drug discovery</span>
+      <span class="pill">Ion channels</span>
+      <span class="pill">Membrane-active peptides</span>
+      <span class="pill">FTIR · CD spectroscopy</span>
+      <span class="pill">Cryo-EM</span>
+      <span class="pill">Open science</span>
+    </div>
+  </section>
+</div>
+
+<hr />
+
+<div class="page">
+  <section id="research">
+    <div class="sec-label reveal">// 02 · Research</div>
+    <h2 class="reveal">Research projects</h2>
+    <div class="research-grid">
+
+      <div class="res-card reveal" style="--c: var(--accent)">
+        <div class="res-num">2.1 · MEMBRANE PROTEINS</div>
+        <h3>Membrane Proteins</h3>
+        <p>
+          We study the structure, dynamics, and function of integral membrane proteins — with a focus on <strong style="color:var(--white)">TRP ion channels (TRPV2)</strong> and P4-ATPases. Using coarse-grained MD simulations and cryo-EM, we characterise lipid fingerprints, drug binding sites, and conformational transitions relevant to cardiovascular and pain physiology.
+        </p>
+      </div>
+
+      <div class="res-card reveal" style="--c: var(--green)">
+        <div class="res-num">2.2 · MEMBRANE ACTIVE PEPTIDES</div>
+        <h3>Membrane Active Peptides</h3>
+        <p>
+          We investigate how <strong style="color:var(--white)">neuropeptides, cell-penetrating peptides, and amyloidogenic peptides</strong> — including Dynorphin A, Aβ, and angiotensin II — interact with and disrupt lipid bilayers. Our work informs the molecular understanding of neurodegeneration and peptide-based therapeutics.
+        </p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<hr />
+
+<div class="page">
+  <section id="publications">
+    <div class="sec-label reveal">// 03 · Publications</div>
+    <h2 class="reveal">Publications</h2>
+    <p class="reveal">
+      Our full publication list, citation metrics, and preprints are available on Google Scholar. All work is open access wherever possible.
+    </p>
+    <a class="outlink reveal"
+       href="https://scholar.google.com/citations?user=jP4TJKkAAAAJ&hl=en"
+       target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+      View on Google Scholar
+    </a>
+  </section>
+</div>
+
+<hr />
+
+<div class="page">
+  <section id="tools">
+    <div class="sec-label reveal">// 04 · Tools &amp; Scripts</div>
+    <h2 class="reveal">Tools &amp; Scripts</h2>
+    <p class="reveal">
+      Simulation protocols, analysis pipelines, and datasets derived from our publications are freely available on our GitHub organisation. Every repository is documented and released under open licenses.
+    </p>
+    <div class="tools-block reveal">
+      <div class="tools-text">
+        <h3>APMlab-memb on GitHub</h3>
+        <p>Browse all our public repositories — CG-MD simulation kits, lipid fingerprint analysis scripts, electrophysiology data, and Jupyter notebooks.</p>
+      </div>
+      <a class="tools-btn" href="https://github.com/APMlab-memb" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        github.com/APMlab-memb →
+      </a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-name"><span>APM</span>LAB</div>
+    <div class="footer-inst">Universitat Autònoma de Barcelona · Bellaterra, Spain</div>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/APMlab-memb" target="_blank">GitHub</a>
+    <a href="https://scholar.google.com/citations?user=jP4TJKkAAAAJ&hl=en" target="_blank">Scholar</a>
+    <a href="https://orcid.org/0000-0002-3457-0875" target="_blank">ORCID</a>
+    <a href="mailto:alex.peralvarez@uab.cat">Contact</a>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const siblings = [...e.target.parentElement.querySelectorAll('.reveal')];
+        const delay = siblings.indexOf(e.target) * 80;
+        setTimeout(() => e.target.classList.add('in'), delay);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav a[href^="#"]');
+  sections.forEach(s => {
+    new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.style.color = '');
+          const a = document.querySelector(`nav a[href="#${e.target.id}"]`);
+          if (a) a.style.color = 'var(--accent)';
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' }).observe(s);
+  });
+</script>
+</body>
+</html>
